@@ -48,6 +48,11 @@
         "message": "Timeout occurred!"
     },
     {
+        "code": 422,
+        "success": false,
+        "message": "Mã Tiếp tục không hợp lệ!"
+    },
+    {
         "success": false,
         "code": 444,
         "message": "Invalid username/password or account_number!"

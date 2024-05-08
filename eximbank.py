@@ -42,6 +42,7 @@ class EXIMBANK:
         self.auth_token = ""
         self.is_login = False
         self.otp_token = ""
+        self.n_login = 0
 
         if not self.file_exists():
             self.username = username
@@ -110,6 +111,7 @@ class EXIMBANK:
             self.otp_token = data["otp_token"]
 
     def do_login(self):
+        self.n_login += 1
         solve_captcha = self.solve_captcha()
         if not solve_captcha["success"]:
             return solve_captcha
@@ -170,8 +172,18 @@ class EXIMBANK:
 
                     else:
                         return check_confirm
+        elif result["code"] == '96':
+            if self.n_login < 5:
+                return self.do_login()
+            return {
+                'code': 422,
+                "success": False,
+                "message": result["des"],
+                "data": result if result else "",
+            } 
         else:
             return {
+                'code': 500,
                 "success": False,
                 "message": result["des"],
                 "data": result if result else "",
@@ -191,9 +203,7 @@ class EXIMBANK:
             "otp": otp,
             "otpToken": self.otp_token,
         }
-        print(params)
         res = self.curl_post(self.url["auth"], params)
-        print(res)
         if res["code"] == "00":
             self.session_id = ""
             self.access_key = res['data']["accessKey"]
@@ -451,6 +461,8 @@ class EXIMBANK:
 # from_date= "02/05/2024"
 # to_date = "09/05/2024"
 # eximbank = EXIMBANK(username, password, account_number)
+# login_result = eximbank.do_login()
+# print(login_result)
 # while True:
 #     balance_result = eximbank.get_balance(account_number)
 #     if "success" in balance_result and balance_result["success"]:
