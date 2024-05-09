@@ -341,7 +341,7 @@ class EXIMBANK:
 
     def get_captcha(self):
         self.captcha_token = "".join(random.choices(string.ascii_letters + string.digits, k=30))
-        response = self.session.get(self.url["getCaptcha"] + self.captcha_token, headers={"user-agent": self.get_user_agent()})
+        response = self.session.get(self.url["getCaptcha"] + self.captcha_token, headers={"user-agent": self.get_user_agent()},proxies=self.proxies)
         result = base64.b64encode(response.content).decode("utf-8")
         return result
     def createTaskCaptcha(self, base64_img):
