@@ -4,3 +4,4 @@ pydantic
 requests
 pycryptodome
 pycryptodomex
+PySocks
