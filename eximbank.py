@@ -10,7 +10,17 @@ import uuid
 def random_number_string(length):
     return ''.join(random.choices(string.digits, k=length))
 class EXIMBANK:
-    def __init__(self, username, password, account_number):
+    def __init__(self, username, password, account_number,proxy_list=None):
+        self.proxy_list = proxy_list
+        if self.proxy_list:
+            self.random_proxy_info = random.choice(self.proxy_list)
+            proxy_host, proxy_port, username, password = self.random_proxy_info.split(':')
+            self.proxies = {
+                'http': f'socks5://{username}:{password}@{proxy_host}:{proxy_port}',
+                'https': f'socks5://{username}:{password}@{proxy_host}:{proxy_port}'
+            }
+        else:
+            self.proxies = None
         self.file = f"db/users/{username}.txt"
         self.cookies_file = f"db/cookies/{account_number}.json"
         self.session = requests.Session()
@@ -414,7 +424,7 @@ class EXIMBANK:
             # if test:
             #     response = self.session.post(url, headers=headers, data=json.dumps({"d":"OaPnaeUM0dwdLivAj4m/8xqErTtuDcqL6JsNQjNt5nowJhAsAKxOjOHt0Dy3Fqd69b5+kLDsqxoi/d5tbheKlOdElTNuKYQ1ANkdsTIwATlALF6Se0YV4h76DviOWST5E3psAOV5r1NPgWwSLNy0Iw3jqRO4D3bmyqRSgGxkhK0oKrXovRc61vXfmVzNaa+s+Tp7Wo6WW6mbayFYJjHmqs0Vh8XwIdxQnCkTFudJXmwffGKQVxSwd5c2VBq/lKxrUMVxWf/8ihUS6upvTNhGE3PcuNuMPd0AqUnBP+r6InPSYFkRlIsVuA05YcjdCVc0d9ax2EC5avGFa7BPNwZ6tJN98beBkofa3VXBDDk0wNGTuN7yUqRUHg08dCPSguC1dxkWgXN7b0jiOcItzEqnKqoDZUWKjbhFo7lHCiKbUW+t8grETqJK5rlbXsbhtyr6dq7z9f0AvQpMXl6Qab23XfXT8GQ9oMUPRONVgmcWKyi7kmhrrPyk4BBkeglYmYKHD2Y546GBvrGtUum9vVMdU+Qmna6rjmMhAdHM+7fQpvTt+AvY8Wc/OEKKCWRPUHfqtkdyF3aMaI0gZJYEyJUSxh1ACbZj+g5X5kt+6RvA6LNTISwKQEebnffcxbYekfU2","k":"bGFkH6ZFF8l57AxMDqSohKJASgHVVpSOkAGqb4nW+ZdBNOIl0xhFiJ3bQc8Yna8YtK+XyB+0s+WlKgWaApMNYuIb2CXmOv+UeIbuvuMoxcncqHKGTDVOZRfCnWaNZ5TDajPIwp0VuCzdRjbEy7weZUitkK1QKE6fHo/J4Ph27qjHRZ1oXQxiE6vzrVReCn4Z31Ez4jBt5/OJPP4ea7Kt/9Hcot1cD9lSS2M/W3zEGR64wpG11nsgBY4rsikeKUxBzReSdzUE6N639Eobs9/8B8FG/6da2kDEpZo+7u4hWtTjgt5yXjKT2dbr4kg6R1GJQta1whVQi5k0enduEuOnug=="}), timeout=self.timeout)
             # else:
-            response = self.session.post(url, headers=headers, data=json.dumps(encrypted_data), timeout=self.timeout)
+            response = self.session.post(url, headers=headers, data=json.dumps(encrypted_data), timeout=self.timeout,proxies=self.proxies)
             self.save_cookies(self.session.cookies)
             result = response.json()
             self.auth_token = response.headers.get("Authorization")
