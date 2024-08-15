@@ -17,8 +17,8 @@ class EXIMBANK:
             self.random_proxy_info = random.choice(self.proxy_list)
             proxy_host, proxy_port, proxy_username, proxy_password = self.random_proxy_info.split(':')
             self.proxies = {
-                'http': f'socks5://{proxy_username}:{proxy_password}@{proxy_host}:{proxy_port}',
-                'https': f'socks5://{proxy_username}:{proxy_password}@{proxy_host}:{proxy_port}'
+                'http': f'http://{proxy_username}:{proxy_password}@{proxy_host}:{proxy_port}',
+                'https': f'https://{proxy_username}:{proxy_password}@{proxy_host}:{proxy_port}'
             }
         else:
             self.proxies = None
