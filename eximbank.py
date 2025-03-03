@@ -146,7 +146,7 @@ class EXIMBANK:
             "username": self.username,
         }
         result = self.curl_post(self.url["auth"], params)
-        if result["code"] == '00':
+        if result and 'code' in result and result["code"] == '00':
             if "data" in result and 'accessKey' in result['data'] and result['data']['accessKey']:
                 data = result
                 self.session_id = data["sessionId"]
@@ -336,7 +336,7 @@ class EXIMBANK:
             }
             result = self.curl_post(self.url["auth"], params, headers={"Authorization": self.auth_token})
             
-            if result['code'] == '00' and 'data' in result and result['data'] and 'currentHistoryList' in result['data']:
+            if result and 'code' in result and result['code'] == '00' and 'data' in result and result['data'] and 'currentHistoryList' in result['data']:
                 return {'code':200,'success': True, 'message': 'Thành công',
                                 'data':{
                                     'transactions':result['data']['currentHistoryList'],
