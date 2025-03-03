@@ -18,7 +18,7 @@ class EXIMBANK:
             proxy_host, proxy_port, proxy_username, proxy_password = self.random_proxy_info.split(':')
             self.proxies = {
                 'http': f'http://{proxy_username}:{proxy_password}@{proxy_host}:{proxy_port}',
-                'https': f'https://{proxy_username}:{proxy_password}@{proxy_host}:{proxy_port}'
+                'https': f'http://{proxy_username}:{proxy_password}@{proxy_host}:{proxy_port}'
             }
         else:
             self.proxies = None
@@ -335,6 +335,7 @@ class EXIMBANK:
                 "accountNo": acc_no
             }
             result = self.curl_post(self.url["auth"], params, headers={"Authorization": self.auth_token})
+            
             if result['code'] == '00' and 'data' in result and result['data'] and 'currentHistoryList' in result['data']:
                 return {'code':200,'success': True, 'message': 'Thành công',
                                 'data':{
@@ -351,6 +352,7 @@ class EXIMBANK:
 
     def get_balance(self,account_number):
         if not self.is_login or time.time() - self.time_login > 290:
+            print('relogin')
             login = self.re_login()
             if 'success' not in login or not login['success']:
                 return login
@@ -387,7 +389,7 @@ class EXIMBANK:
         else:
             self.is_login = False
             self.save_data()
-            return {'code':401 ,'success': False, 'message': 'Please relogin!'}
+            return {'code':401 ,'success': False, 'message': 'Please relogin!','data':result}
 
     def get_captcha(self):
         self.captcha_token = "".join(random.choices(string.ascii_letters + string.digits, k=30))
